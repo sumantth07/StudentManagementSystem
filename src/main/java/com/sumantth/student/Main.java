@@ -13,7 +13,7 @@ public class Main {
         do {
             // print menu
             System.out.println("══════════════════════════");
-            System.out.println("  STUDENT MANAGEMENT SYSTEM");
+            System.out.println("  STUDENT MANAGEMENT SYSTEM version 1.0");
             System.out.println("══════════════════════════");
             System.out.println("1. Add Student");
             System.out.println("2. View All Students");
