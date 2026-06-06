@@ -1,6 +1,10 @@
 package com.sumantth.student;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "students")
 public class Student {
+    @Id
     private int id;
     private String name;
     private int age ;
@@ -13,6 +17,10 @@ public class Student {
         this.age = age;
         this.marks = marks;
         this.grade = setGrade(marks);
+    }
+
+    public Student() {
+
     }
 
 
