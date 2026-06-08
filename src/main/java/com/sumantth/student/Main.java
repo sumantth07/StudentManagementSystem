@@ -24,7 +24,11 @@ public class Main {
             System.out.println("3. Search Student");
             System.out.println("4. Update Student");
             System.out.println("5. Delete Student");
+
             System.out.println("6. Generate Report");
+            System.out.println("7. find student by name");
+            System.out.println("8. order students by name");
+
             System.out.println("0. Exit");
             System.out.println("══════════════════════════");
             System.out.print("Enter choice: ");
@@ -33,16 +37,21 @@ public class Main {
 
             switch(choice) {
                 case 1:
-                    System.out.println("enter ID");
-                    int id = sc.nextInt();
-                    sc.nextLine(); // clear buffer!
-                    System.out.print("Enter Name: ");
-                    String name = sc.nextLine();
-                    System.out.print("Enter Age: ");
-                    int age = sc.nextInt();
-                    System.out.print("Enter Marks: ");
-                    float marks = sc.nextFloat();
-                    service.addStudent(id,name,age,marks);
+                    try{
+                        System.out.println("enter ID");
+                        int id = sc.nextInt();
+                        sc.nextLine(); // clear buffer!
+                        System.out.print("Enter Name: ");
+                        String name = sc.nextLine();
+                        System.out.print("Enter Age: ");
+                        int age = sc.nextInt();
+                        System.out.print("Enter Marks: ");
+                        float marks = sc.nextFloat();
+                        service.addStudent(id,name,age,marks);
+                    } catch (RuntimeException e) {
+                        System.out.println(e.getMessage());
+                    }
+
                     break;
                 case 2:
                     List<Student> students = service.getAllStudents();
@@ -90,6 +99,36 @@ public class Main {
                     }
                     break;
                 case 6:  service.generateReport();
+                    break;
+
+
+                case 7:
+                    sc.nextLine();
+                    System.out.println("enter the name ");
+                    String name = sc.nextLine();
+                    try{
+                        Student s = service.findByName(name);
+                        System.out.println(s);
+                    } catch (RuntimeException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+
+                case 8:
+
+                    try {
+
+                        List<Student> studentsInOrder =
+                                service.sortByName();
+
+                        studentsInOrder.forEach(System.out::println);
+
+                    } catch(Exception e) {
+
+                        System.out.println(e.getMessage());
+
+                    }
+
                     break;
                 case 0:
                     System.out.println("Goodbye!");

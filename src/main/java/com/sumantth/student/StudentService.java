@@ -7,6 +7,7 @@ public class StudentService {
     StudentRepository repository = new StudentRepository();
    public void  addStudent(int id, String name, int age, float marks){
 
+
        // Step 1 — validate
        if(name.isEmpty()) {
            System.out.println("Name cannot be empty!");
@@ -19,6 +20,13 @@ public class StudentService {
        if(marks < 0 || marks > 100) {
            System.out.println("Marks must be 0-100!");
            return;
+       }
+
+       Student existing = repository.findById(id);
+       if(existing != null){
+           throw new RuntimeException(
+                   "Student ID already exists"
+           );
        }
        Student s = new Student(id, name, age, marks);
        repository.save(s);
@@ -52,7 +60,8 @@ public class StudentService {
 
         Student updated = new Student(id, name,
                 age, marks);
-        repository.update(updated);
+        repository.update(id,  name,
+         age,  marks);
         System.out.println("Student updated!");
     }
     public void generateReport() {
@@ -87,6 +96,30 @@ public class StudentService {
         System.out.println("Fail Count     : " + fail);
         System.out.println("─────────────────────");
     }
+
+    public Student findByName(String name ){
+
+       Student s = repository.findByName(name);
+       if(s == null){
+                throw new RuntimeException("student not found with name " + name);
+       }
+       return s;
+    }
+    public List<Student> sortByName() {
+
+        List<Student> students =
+                repository.sortByName();
+
+        if(students.isEmpty()) {
+
+            throw new RuntimeException(
+                    "No students found"
+            );
+        }
+
+        return students;
+    }
+
 
 
 

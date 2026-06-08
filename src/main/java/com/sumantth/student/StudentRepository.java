@@ -19,14 +19,38 @@ public class StudentRepository {
 
     }
 
-    public void save(Student s) {
+    public void save(Student student) {
 
-        Session session  = HibernateUtil.getSessionFactory().openSession();
-        Transaction tx = session.beginTransaction();
-        session.persist(s);
-        tx.commit();
-        session.close();
+        Session session = null;
+        Transaction tx = null;
 
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            tx = session.beginTransaction();
+
+            session.persist(student);
+
+            tx.commit();
+
+        }
+        catch (Exception e) {
+
+            if (tx != null) {
+                tx.rollback();
+            }
+
+            e.printStackTrace();
+        }
+        finally {
+
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 
     public Student findById(int id){
@@ -43,20 +67,110 @@ public class StudentRepository {
                 .getSessionFactory()
                 .openSession();
         Transaction tx = session.beginTransaction();
-        Student s = session.get(Student.class,id);
-        if(s!= null) session.remove(s);
+        int rows = session.createMutationQuery("DELETE FROM Student WHERE id = :id")
+                .setParameter("id",id).executeUpdate();
+        if(rows == 0){
+            throw new RuntimeException(
+                    "Student not found with id " + id
+            );
+        }
         tx.commit();
         session.close();
     }
-    public void update(Student updated) {
-        Session session = HibernateUtil
-                .getSessionFactory()
-                .openSession();
-        Transaction tx = session.beginTransaction();
-        session.merge(updated);
-        tx.commit();
-        session.close();
+    public void update(int id,
+                              String name,
+                              int age,
+                              float marks) {
+
+        Session session = null;
+        Transaction tx = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            tx = session.beginTransaction();
+
+            int rows = session.createMutationQuery(
+                            """
+                            UPDATE Student
+                            SET name = :name,
+                                age = :age,
+                                marks = :marks
+                            WHERE id = :id
+                            """
+                    )
+                    .setParameter("name", name)
+                    .setParameter("age", age)
+                    .setParameter("marks", marks)
+                    .setParameter("id", id)
+                    .executeUpdate();
+
+            if(rows == 0) {
+                throw new RuntimeException(
+                        "Student not found with id " + id
+                );
+            }
+
+            tx.commit();
+
+        } catch(Exception e) {
+
+            if(tx != null)
+                tx.rollback();
+
+            throw e;
+
+        } finally {
+
+            if(session != null)
+                session.close();
+        }
     }
+    public Student findByName(String s){
+
+        Session session = null;
+        try{
+             session = HibernateUtil.getSessionFactory().openSession();
+            Student student = session.createQuery("FROM Student WHERE name =:name",Student.class)
+                    .setParameter("name",s).getSingleResult();
+            return student;
+        } catch (RuntimeException e) {
+            return null;
+        }
+        finally {
+
+            if(session != null) {
+                session.close();
+            }
+        }
+
+    }
+    public List<Student> sortByName() {
+
+        Session session = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            return session.createQuery(
+                    "FROM Student ORDER BY name ASC",
+                    Student.class
+            ).getResultList();
+
+        } finally {
+
+            if(session != null) {
+                session.close();
+            }
+        }
+    }
+
 
 
 
